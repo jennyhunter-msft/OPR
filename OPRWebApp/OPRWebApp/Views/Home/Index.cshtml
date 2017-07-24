@@ -1,33 +1,12 @@
 ﻿@{
     ViewBag.Title = "OPR";
     string session = (string)ViewData["session"];
-    string bingMapsKey = (string)ViewData["BingMapsKey"];
-    string locationInformation = (string)ViewData["LocationInformation"];
-
-    string SessionIdDisplay = "Your Session ID isn't currently set.";
 }
 
 <div class="jumbotron">
-    <h1>OPR - for a Better Puzzle Hunting</h1>
-    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in felis condimentum, fermentum nisl non, posuere nisi. Praesent id nisl ornare, dictum lectus nec, convallis ex. Duis eu tellus maximus, efficitur lorem eu, laoreet velit. Vestibulum malesuada sollicitudin dui nec finibus. Fusce condimentum, mauris non fringilla blandit, justo metus fringilla massa, ac sodales nunc arcu a ante.</p>
-    <p>
-        @if (!string.IsNullOrEmpty(locationInformation))
-        {
-            @locationInformation
-        }
-    </p>
-    <p>
-        @if (!string.IsNullOrEmpty(session))
-        {
-            SessionIdDisplay = string.Format("Your current active Session ID is {0}", @session);
-        }
-        @SessionIdDisplay
-    </p>
-    <p>
-        @if (string.IsNullOrEmpty(bingMapsKey))
-        {
-            string error = "There is currently no bingMapsKey set.";
-            @error
-        }
-    </p>
+    <h1>Optimal Pickup Routes (OPR)</h1>
+    <p class="lead"> OPR allows you to work with others to follow a shortest distance path. <p>
+    <p> Do you need to pick up friends from all across the area? With OPR, you can put their addresses into our system as stops, and it will give you the optimal path to pick them up. In addition, they can track your location using the “Locate Traveler” feature. </p>
+</p>
+    <p>@session</p>
 </div>
