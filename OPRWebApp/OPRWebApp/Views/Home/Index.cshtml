@@ -1,10 +1,33 @@
 ﻿@{
     ViewBag.Title = "OPR";
     string session = (string)ViewData["session"];
+    string bingMapsKey = (string)ViewData["BingMapsKey"];
+    string locationInformation = (string)ViewData["LocationInformation"];
+
+    string SessionIdDisplay = "Your Session ID isn't currently set.";
 }
 
 <div class="jumbotron">
     <h1>OPR - for a Better Puzzle Hunting</h1>
     <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in felis condimentum, fermentum nisl non, posuere nisi. Praesent id nisl ornare, dictum lectus nec, convallis ex. Duis eu tellus maximus, efficitur lorem eu, laoreet velit. Vestibulum malesuada sollicitudin dui nec finibus. Fusce condimentum, mauris non fringilla blandit, justo metus fringilla massa, ac sodales nunc arcu a ante.</p>
-    <p>@session</p>
+    <p>
+        @if (!string.IsNullOrEmpty(locationInformation))
+        {
+            @locationInformation
+        }
+    </p>
+    <p>
+        @if (!string.IsNullOrEmpty(session))
+        {
+            SessionIdDisplay = string.Format("Your current active Session ID is {0}", @session);
+        }
+        @SessionIdDisplay
+    </p>
+    <p>
+        @if (string.IsNullOrEmpty(bingMapsKey))
+        {
+            string error = "There is currently no bingMapsKey set.";
+            @error
+        }
+    </p>
 </div>

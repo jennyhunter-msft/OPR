@@ -12,11 +12,11 @@ namespace OPRWebApp
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+            
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{session}",
-                defaults: new { controller = "Home", action = "Index", session = UrlParameter.Optional }
+                url: "{controller}/{action}/{sessionId}/{query}",
+                defaults: new { controller = "Home", action = "Index", sessionId = UrlParameter.Optional, query = UrlParameter.Optional }
             );
         }
     }
