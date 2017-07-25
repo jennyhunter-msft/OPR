@@ -29,6 +29,8 @@
           <Property Name="Completed" Type="bit" />
           <Property Name="StopID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PathID" Type="uniqueidentifier" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -127,6 +129,8 @@
           <Property Name="StopID" Type="Guid" Nullable="false" />
           <Property Name="PathID" Type="Guid" />
           <NavigationProperty Name="Path" Relationship="Self.FK__Stops__PathID__4222D4EF" FromRole="Stops" ToRole="Paths" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -218,6 +222,8 @@
           <EntitySetMapping Name="Stops">
             <EntityTypeMapping TypeName="OPRDBModel.Stop">
               <MappingFragment StoreEntitySet="Stops">
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="Addr" ColumnName="Addr" />
                 <ScalarProperty Name="StopOrder" ColumnName="StopOrder" />

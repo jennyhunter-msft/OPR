@@ -15,8 +15,8 @@ namespace OPRWebApp
             
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{sessionId}",
-                defaults: new { controller = "Home", action = "Index", sessionId = UrlParameter.Optional}
+                url: "{controller}/{action}/{sessionId}/{pathID}",
+                defaults: new { controller = "Home", action = "Index", sessionId = UrlParameter.Optional, pathID = UrlParameter.Optional}
             );
         }
     }

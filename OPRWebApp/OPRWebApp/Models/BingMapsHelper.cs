@@ -19,33 +19,55 @@ namespace OPRWebApp.Models
         private const string _bingMapsRouteURL = _bingMapsBaseUrl + "/Routes/{0}?{1}$key={2}";
         private const string _baseTransportMode = "Driving";
 
+        public static string GetLocationName(string location)
+        {
+            return GetLocationInformation(location).Name;
+        }
+
+        public static string GetLocationCoordinates(string location)
+        {
+            var coordinates = new Point(GetLocationInformation(location).Point.Coordinates);
+            return coordinates.ToString();
+        }
+
+        public static Location GetLocationInformation(string location)
+        {
+            Uri geoCodeRequest = BingMapsHelper.GenerateLocationURI(location);
+            return (Location)BingMapsHelper.QueryBingMaps(geoCodeRequest).ResourceSets[0].Resources[0];
+        }
 
         public static Uri GenerateLocationURI(string location)
         {
-           return new Uri(string.Format(_bingMapsLocationURL, location, _bingMapsKey));
+            return new Uri(string.Format(_bingMapsLocationURL, location, _bingMapsKey));
         }
 
         public static Uri GenerateRouteURI(string transportMode = _baseTransportMode, Leg[] legs = null)
         {
             string legsUriElements = String.Join("&", legs.SelectMany(l => l.GenerateUriElement()));
-            return new Uri(string.Format(_bingMapsRouteURL,transportMode,legsUriElements,_bingMapsKey));
+            return new Uri(string.Format(_bingMapsRouteURL, transportMode, legsUriElements, _bingMapsKey));
         }
 
         public static Response QueryBingMaps(Uri geoCodeRequest)
         {
             var request = (HttpWebRequest)WebRequest.Create(geoCodeRequest);
-
-            using (var response = (HttpWebResponse)request.GetResponse())
+            try
             {
-                if (response.StatusCode != HttpStatusCode.OK)
+                using (var response = (HttpWebResponse) request.GetResponse())
                 {
-                    var message = String.Format("Request failed. Received HTTP {0}", response.StatusCode);
-                    throw new ApplicationException(message);
-                }
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        var message = String.Format("Request failed. Received HTTP {0}", response.StatusCode);
+                        throw new ApplicationException(message);
+                    }
 
-                // grab the response
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Response));
-                return ser.ReadObject(response.GetResponseStream()) as Response;
+                    // grab the response
+                    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Response));
+                    return ser.ReadObject(response.GetResponseStream()) as Response;
+                }
+            }
+            catch (Exception)
+            {
+                return new Response();
             }
         }
     }

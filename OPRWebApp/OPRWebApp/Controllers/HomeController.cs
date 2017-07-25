@@ -17,49 +17,60 @@ namespace OPRWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index(string sessionId)
+        public ActionResult Index(string sessionId=null, string pathId=null)
         {
             if (string.IsNullOrEmpty(sessionId))
             {
-                ViewBag.SessionID = Constants.EmptySessionID;
+                ViewBag.SessionId = Constants.EmptySessionID;
             }
             else
             {
                 //Confirm that sessionId is valid
-                OPRSessionHelper oprSessionHelper = new OPRSessionHelper();
-                var sessionExists = oprSessionHelper.SessionExists(sessionId);
-                ViewBag.SessionID = sessionExists ? sessionId : Constants.InvalidSessionID;
+                var sessionExists = OPRSessionHelper.SessionExists(sessionId);
+                ViewBag.SessionId = sessionExists ? sessionId : Constants.InvalidSessionID;
+            }
+
+            if (string.IsNullOrEmpty(pathId))
+            {
+                ViewBag.PathId = Constants.EmptyPathID;
+            }
+            else
+            {
+                //Confirm that sessionId is valid
+                var pathExists = OPRSessionHelper.PathExistsForSession(sessionId, pathId);
+                ViewBag.PathId = pathExists ? pathId : Constants.InvalidPathID;
             }
 
             return View();
         }
-        
-        public string AddLocationToRouteLeg(string location)
-        {
-            var locationInformation = GetLocationInformation(location);
-            string locationName = locationInformation.Name;
-            Point locationCoordinates = new Point(locationInformation.Point.Coordinates);
 
-            //TODO: Query the database to keep track of the current route, add the element to it, and return the full route
-            string currentRoute = string.Format("{0} : {1}", locationName, locationCoordinates);
-            return currentRoute;
+        private bool IsSessionValid(string sessionId)
+        {
+            return !(string.IsNullOrEmpty(sessionId) || string.Equals(sessionId, Constants.InvalidSessionID) ||
+                     string.Equals(sessionId, Constants.EmptySessionID));
+        }
+        private bool IsPathValid(string pathId)
+        {
+            return !(string.IsNullOrEmpty(pathId) || string.Equals(pathId, Constants.InvalidPathID) ||
+                     string.Equals(pathId, Constants.EmptyPathID));
         }
 
-        public string GetLocationName(string location)
+        [HttpPost]
+        public ActionResult AddLocationToPath(string sessionId, string pathId, string location)
         {
-            return GetLocationInformation(location).Name;
-        }
+            if (!IsSessionValid(sessionId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new {error = "ERROR : Invalid Session ID"});
+            }
+            if (!IsPathValid(pathId))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { error = "ERROR : Invalid Path ID" });
+            }
 
-        public string GetLocationCoordinates(string location)
-        {
-            var coordinates = new Point(GetLocationInformation(location).Point.Coordinates);
-            return coordinates.ToString();
-        }
-
-        private Location GetLocationInformation(string location)
-        {
-            Uri geoCodeRequest = BingMapsHelper.GenerateLocationURI(location);
-            return (Location)BingMapsHelper.QueryBingMaps(geoCodeRequest).ResourceSets[0].Resources[0];
+            var currentPath = OPRSessionHelper.AddStopToPath(sessionId,pathId,location);
+            return Json(currentPath); ;
         }
     }
 }

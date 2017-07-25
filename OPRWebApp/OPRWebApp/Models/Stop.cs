@@ -20,6 +20,8 @@ namespace OPRWebApp.Models
         public Nullable<bool> Completed { get; set; }
         public System.Guid StopID { get; set; }
         public Nullable<System.Guid> PathID { get; set; }
+        public Nullable<double> Latitude { get; set; }
+        public Nullable<double> Longitude { get; set; }
     
         public virtual Path Path { get; set; }
     }

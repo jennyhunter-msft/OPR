@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using OPRWebApp.Models
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -8,13 +9,13 @@
     @Scripts.Render("~/bundles/modernizr")
 
     <script type="text/javascript">
-        var appInsights=window.appInsights||function(config){
-            function r(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s=u.createElement(o),i,f;for(s.src=config.url||"//az416426.vo.msecnd.net/scripts/a/ai.0.js",u.getElementsByTagName(o)[0].parentNode.appendChild(s),t.cookie=u.cookie,t.queue=[],i=["Event","Exception","Metric","PageView","Trace","Ajax"];i.length;)r("track"+i.pop());return r("setAuthenticatedUserContext"),r("clearAuthenticatedUserContext"),config.disableExceptionTracking||(i="onerror",r("_"+i),f=e[i],e[i]=function(config,r,u,e,o){var s=f&&f(config,r,u,e,o);return s!==!0&&t["_"+i](config,r,u,e,o),s}),t
+        var appInsights = window.appInsights || function (config) {
+            function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace", "Ajax"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
         }({
-            instrumentationKey:"c1e87387-42a5-44df-80be-602b566dfcc1"
+            instrumentationKey: "c1e87387-42a5-44df-80be-602b566dfcc1"
         });
-        
-        window.appInsights=appInsights;
+
+        window.appInsights = appInsights;
         appInsights.trackPageView();
     </script>
 </head>
@@ -32,6 +33,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -42,20 +44,40 @@
             <p>
                 @{
                     string sessionIDDisplay = "";
-                    if (string.Equals(ViewBag.SessionID, "EMPTY_SESSION_ID"))
+                    switch ((string)ViewBag.SessionId)
                     {
-                        sessionIDDisplay = "No Session ID Currently in use";
-                    }
-                    else if (string.Equals(ViewBag.SessionID, "INVALID_SESSION_ID"))
-                    {
-                        sessionIDDisplay = "Current Session ID is invalid";
-                    }
-                    else
-                    {
-                        sessionIDDisplay = string.Format("Session ID : {0}", ViewBag.SessionID);
+                        case @Constants.EmptySessionID:
+                            sessionIDDisplay = "No Session ID Currently in use";
+                            break;
+                        case @Constants.InvalidSessionID:
+                            sessionIDDisplay = "Current Session ID is invalid";
+                            break;
+                        default:
+                            sessionIDDisplay = string.Format("Session ID : {0}", ViewBag.SessionId);
+                            break;
+
                     }
                 }
                 @sessionIDDisplay
+            </p>
+            <p>
+                @{
+                    string pathIdDisplay = "";
+                    switch ((string)ViewBag.PathId)
+                    {
+                        case @Constants.EmptyPathID:
+                            pathIdDisplay = "No Path ID Currently in use";
+                            break;
+                        case @Constants.InvalidPathID:
+                            pathIdDisplay = "Current Path ID is invalid";
+                            break;
+                        default:
+                            pathIdDisplay = string.Format("Path ID : {0}", ViewBag.PathId);
+                            break;
+
+                    }
+                }
+                @pathIdDisplay
             </p>
         </footer>
     </div>

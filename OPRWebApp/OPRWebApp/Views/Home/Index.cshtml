@@ -10,19 +10,37 @@
     </p>
 
     @Html.TextBox("Location")
-    <input type="button" value="Add to current Route" onclick="UpdateLocation($('#Location').val())" />
-
+    <input type="button" value="Add to current Route" onclick="AddLocationToRoute()" />
     <p id="CurrentRoute">
     <p id="LocationCoordinates" />
+
 </div>
 
 <script>
-    function UpdateLocation(value) {
+    document.getElementById("Location").addEventListener("keydown", function (e) {
+        //When Enter is pressed
+        if (e.keyCode == 13) {
+            AddLocationToRoute();
+        }
+    }, false);
+
+    function AddLocationToRoute() {
         $.ajax({
-            url: "@Url.Action("AddLocationToRouteLeg", "Home")?location=" + value,
-        }).done(function (data) {
-            //TODO: Once data represents the route, remove mockup information
-            document.getElementById("CurrentRoute").innerHTML += "<br>" + data;
+            url: '@Url.Action("AddLocationToPath", "Home")',
+            type: 'POST',
+            async: false,
+            dataType: 'json',
+            data: {
+                sessionId: "@ViewBag.SessionId",
+                pathId: "@ViewBag.PathId",
+                location: $('#Location').val()
+            },
+            success: function (result) {
+                document.getElementById("CurrentRoute").innerHTML = result.join("<br />");
+            },
+            error: function (result) {
+                alert($.parseJSON(result.responseText).error);
+            }
         });
     }
 </script>
