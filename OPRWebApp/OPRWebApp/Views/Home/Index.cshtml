@@ -1,21 +1,29 @@
 ﻿@{
     ViewBag.Title = "OPR";
     string session = (string)ViewData["session"];
-    string bingMapsKey = (string)ViewData["BingMapsKey"];
-    string locationInformation = (string)ViewData["LocationInformation"];
+    string locationName = (string)ViewData["LocationName"];
 
     string SessionIdDisplay = "Your Session ID isn't currently set.";
 }
 
 <div class="jumbotron">
     <h1>Optimal Pickup Routes (OPR)</h1>
-    <p class="lead"> OPR allows you to work with others to follow a shortest distance path. <p>
-    <p> Do you need to pick up friends from all across the area? With OPR, you can put their addresses into our system as stops, and it will give you the optimal path to pick them up. In addition, they can track your location using the “Locate Traveler” feature. </p>
-    </p>    <p>
-        @if (!string.IsNullOrEmpty(locationInformation))
-        {
-            @locationInformation
-        }
+    <p class="lead"> OPR allows you to work with others to follow a shortest distance path. </p>
+    <p>
+        Do you need to pick up friends from all across the area? With OPR, you can put their addresses into our system as stops, and it will give you the optimal path to pick them up. In addition, they can track your location using the “Locate Traveler” feature.
+    </p>
+
+    @Html.TextBox("Location")
+    <input type="button" value="Go!" onclick="UpdateLocation($('#Location').val())" />
+
+    <p id="CurrentLocationInformation">
+        <p id ="LocationName">
+            @if (!string.IsNullOrEmpty(locationName))
+            {
+                @locationName
+            }
+        </p>
+        <p id="LocationCoordinates"/>
     </p>
     <p>
         @if (!string.IsNullOrEmpty(session))
@@ -24,11 +32,19 @@
         }
         @SessionIdDisplay
     </p>
-    <p>
-        @if (string.IsNullOrEmpty(bingMapsKey))
-        {
-            string error = "There is currently no bingMapsKey set.";
-            @error
-        }
-    </p>
 </div>
+
+<script>
+    function UpdateLocation(value) {
+        $.ajax({
+            url: "@Url.Action("GetLocationName", "Home")?location="+value,
+        }).done(function (data) {
+            document.getElementById("LocationName").innerHTML = data;
+        });
+        $.ajax({
+            url: "@Url.Action("GetLocationCoordinates", "Home")?location="+value,
+        }).done(function (data) {
+            document.getElementById("LocationCoordinates").innerHTML = data;
+        });
+        }
+</script>
