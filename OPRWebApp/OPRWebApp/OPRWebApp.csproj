@@ -240,20 +240,32 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\OPRDataModel.Context.cs">
+    <Compile Include="Models\OPRModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OPRDataModel.Context.tt</DependentUpon>
+      <DependentUpon>OPRModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\OPRDataModel.cs">
+    <Compile Include="Models\OPRModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OPRDataModel.tt</DependentUpon>
+      <DependentUpon>OPRModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\OPRDataModel.Designer.cs">
+    <Compile Include="Models\OPRModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OPRDataModel.edmx</DependentUpon>
+      <DependentUpon>OPRModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Path.cs">
+      <DependentUpon>OPRModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Session.cs">
+      <DependentUpon>OPRModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Stop.cs">
+      <DependentUpon>OPRModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>OPRModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -267,15 +279,15 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\OPRDataModel.Context.tt">
+    <Content Include="Models\OPRModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>OPRDataModel.edmx</DependentUpon>
-      <LastGenOutput>OPRDataModel.Context.cs</LastGenOutput>
+      <DependentUpon>OPRModel.edmx</DependentUpon>
+      <LastGenOutput>OPRModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\OPRDataModel.tt">
+    <Content Include="Models\OPRModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>OPRDataModel.edmx</DependentUpon>
-      <LastGenOutput>OPRDataModel.cs</LastGenOutput>
+      <DependentUpon>OPRModel.edmx</DependentUpon>
+      <LastGenOutput>OPRModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
@@ -290,12 +302,12 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <EntityDeploy Include="Models\OPRDataModel.edmx">
+    <EntityDeploy Include="Models\OPRModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>OPRDataModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>OPRModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\OPRDataModel.edmx.diagram">
-      <DependentUpon>OPRDataModel.edmx</DependentUpon>
+    <Content Include="Models\OPRModel.edmx.diagram">
+      <DependentUpon>OPRModel.edmx</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\OPRWebApp - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\OPRWebApp - Web Deploy.pubxml" />

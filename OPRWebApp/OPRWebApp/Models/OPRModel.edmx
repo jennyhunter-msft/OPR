@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="OPRDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Paths">
+          <Key>
+            <PropertyRef Name="PathID" />
+          </Key>
+          <Property Name="SortType" Type="bit" />
+          <Property Name="PathID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SessionID" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Sessions">
+          <Key>
+            <PropertyRef Name="SessionID" />
+          </Key>
+          <Property Name="SessionID" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stops">
+          <Key>
+            <PropertyRef Name="StopID" />
+          </Key>
+          <Property Name="Note" Type="nvarchar(max)" />
+          <Property Name="Addr" Type="nvarchar(max)" />
+          <Property Name="StopOrder" Type="int" />
+          <Property Name="Completed" Type="bit" />
+          <Property Name="StopID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PathID" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="DisplayName" />
+          </Key>
+          <Property Name="Location" Type="nvarchar(max)" />
+          <Property Name="Traveler" Type="bit" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="SessionID" Type="uniqueidentifier" />
+        </EntityType>
+        <Association Name="FK__Paths__SessionID__3F466844">
+          <End Role="Sessions" Type="Self.Sessions" Multiplicity="0..1" />
+          <End Role="Paths" Type="Self.Paths" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sessions">
+              <PropertyRef Name="SessionID" />
+            </Principal>
+            <Dependent Role="Paths">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Stops__PathID__4222D4EF">
+          <End Role="Paths" Type="Self.Paths" Multiplicity="0..1" />
+          <End Role="Stops" Type="Self.Stops" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Paths">
+              <PropertyRef Name="PathID" />
+            </Principal>
+            <Dependent Role="Stops">
+              <PropertyRef Name="PathID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__SessionID__403A8C7D">
+          <End Role="Sessions" Type="Self.Sessions" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sessions">
+              <PropertyRef Name="SessionID" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OPRDBModelStoreContainer">
+          <EntitySet Name="Paths" EntityType="Self.Paths" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sessions" EntityType="Self.Sessions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stops" EntityType="Self.Stops" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Paths__SessionID__3F466844" Association="Self.FK__Paths__SessionID__3F466844">
+            <End Role="Sessions" EntitySet="Sessions" />
+            <End Role="Paths" EntitySet="Paths" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Stops__PathID__4222D4EF" Association="Self.FK__Stops__PathID__4222D4EF">
+            <End Role="Paths" EntitySet="Paths" />
+            <End Role="Stops" EntitySet="Stops" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__SessionID__403A8C7D" Association="Self.FK__Users__SessionID__403A8C7D">
+            <End Role="Sessions" EntitySet="Sessions" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OPRDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Path">
+          <Key>
+            <PropertyRef Name="PathID" />
+          </Key>
+          <Property Name="SortType" Type="Boolean" />
+          <Property Name="PathID" Type="Guid" Nullable="false" />
+          <Property Name="SessionID" Type="Guid" />
+          <NavigationProperty Name="Session" Relationship="Self.FK__Paths__SessionID__3F466844" FromRole="Paths" ToRole="Sessions" />
+          <NavigationProperty Name="Stops" Relationship="Self.FK__Stops__PathID__4222D4EF" FromRole="Paths" ToRole="Stops" />
+        </EntityType>
+        <EntityType Name="Session">
+          <Key>
+            <PropertyRef Name="SessionID" />
+          </Key>
+          <Property Name="SessionID" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Paths" Relationship="Self.FK__Paths__SessionID__3F466844" FromRole="Sessions" ToRole="Paths" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Users__SessionID__403A8C7D" FromRole="Sessions" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Stop">
+          <Key>
+            <PropertyRef Name="StopID" />
+          </Key>
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Addr" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StopOrder" Type="Int32" />
+          <Property Name="Completed" Type="Boolean" />
+          <Property Name="StopID" Type="Guid" Nullable="false" />
+          <Property Name="PathID" Type="Guid" />
+          <NavigationProperty Name="Path" Relationship="Self.FK__Stops__PathID__4222D4EF" FromRole="Stops" ToRole="Paths" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="DisplayName" />
+          </Key>
+          <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Traveler" Type="Boolean" />
+          <Property Name="DisplayName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SessionID" Type="Guid" />
+          <NavigationProperty Name="Session" Relationship="Self.FK__Users__SessionID__403A8C7D" FromRole="Users" ToRole="Sessions" />
+        </EntityType>
+        <Association Name="FK__Paths__SessionID__3F466844">
+          <End Role="Sessions" Type="Self.Session" Multiplicity="0..1" />
+          <End Role="Paths" Type="Self.Path" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sessions">
+              <PropertyRef Name="SessionID" />
+            </Principal>
+            <Dependent Role="Paths">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Stops__PathID__4222D4EF">
+          <End Role="Paths" Type="Self.Path" Multiplicity="0..1" />
+          <End Role="Stops" Type="Self.Stop" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Paths">
+              <PropertyRef Name="PathID" />
+            </Principal>
+            <Dependent Role="Stops">
+              <PropertyRef Name="PathID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__SessionID__403A8C7D">
+          <End Role="Sessions" Type="Self.Session" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sessions">
+              <PropertyRef Name="SessionID" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OPRDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Paths" EntityType="Self.Path" />
+          <EntitySet Name="Sessions" EntityType="Self.Session" />
+          <EntitySet Name="Stops" EntityType="Self.Stop" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK__Paths__SessionID__3F466844" Association="Self.FK__Paths__SessionID__3F466844">
+            <End Role="Sessions" EntitySet="Sessions" />
+            <End Role="Paths" EntitySet="Paths" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Stops__PathID__4222D4EF" Association="Self.FK__Stops__PathID__4222D4EF">
+            <End Role="Paths" EntitySet="Paths" />
+            <End Role="Stops" EntitySet="Stops" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__SessionID__403A8C7D" Association="Self.FK__Users__SessionID__403A8C7D">
+            <End Role="Sessions" EntitySet="Sessions" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OPRDBModelStoreContainer" CdmEntityContainer="OPRDBEntities">
+          <EntitySetMapping Name="Paths">
+            <EntityTypeMapping TypeName="OPRDBModel.Path">
+              <MappingFragment StoreEntitySet="Paths">
+                <ScalarProperty Name="SortType" ColumnName="SortType" />
+                <ScalarProperty Name="PathID" ColumnName="PathID" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sessions">
+            <EntityTypeMapping TypeName="OPRDBModel.Session">
+              <MappingFragment StoreEntitySet="Sessions">
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stops">
+            <EntityTypeMapping TypeName="OPRDBModel.Stop">
+              <MappingFragment StoreEntitySet="Stops">
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="Addr" ColumnName="Addr" />
+                <ScalarProperty Name="StopOrder" ColumnName="StopOrder" />
+                <ScalarProperty Name="Completed" ColumnName="Completed" />
+                <ScalarProperty Name="StopID" ColumnName="StopID" />
+                <ScalarProperty Name="PathID" ColumnName="PathID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="OPRDBModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="Traveler" ColumnName="Traveler" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
