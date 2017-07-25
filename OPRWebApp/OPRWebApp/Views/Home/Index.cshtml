@@ -1,11 +1,5 @@
-﻿@using OPRWebApp.Models
-@{
+﻿@{
     ViewBag.Title = "OPR";
-    string session = (string)ViewData["session"];
-
-    string SessionIdDisplay = "Your Session ID isn't currently set.";
-
-    List<Leg> legs = new List<Leg>();
 }
 
 <div class="jumbotron">
@@ -20,14 +14,6 @@
 
     <p id="CurrentRoute">
     <p id="LocationCoordinates" />
-    </p>
-    <p>
-        @if (!string.IsNullOrEmpty(session))
-        {
-            SessionIdDisplay = string.Format("Your current active Session ID is {0}", @session);
-        }
-        @SessionIdDisplay
-    </p>
 </div>
 
 <script>

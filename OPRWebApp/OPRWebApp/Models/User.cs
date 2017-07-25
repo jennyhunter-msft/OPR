@@ -14,10 +14,11 @@ namespace OPRWebApp.Models
     
     public partial class User
     {
-        public string Location { get; set; }
         public Nullable<bool> Traveler { get; set; }
         public string DisplayName { get; set; }
         public Nullable<System.Guid> SessionID { get; set; }
+        public Nullable<double> Latitude { get; set; }
+        public Nullable<double> Longitude { get; set; }
     
         public virtual Session Session { get; set; }
     }

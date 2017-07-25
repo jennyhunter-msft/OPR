@@ -19,7 +19,18 @@ namespace OPRWebApp.Controllers
     {
         public ActionResult Index(string sessionId)
         {
-            ViewData["session"] = sessionId;
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                ViewBag.SessionID = Constants.EmptySessionID;
+            }
+            else
+            {
+                //Confirm that sessionId is valid
+                OPRSessionHelper oprSessionHelper = new OPRSessionHelper();
+                var sessionExists = oprSessionHelper.SessionExists(sessionId);
+                ViewBag.SessionID = sessionExists ? sessionId : Constants.InvalidSessionID;
+            }
+
             return View();
         }
         
