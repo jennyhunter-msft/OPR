@@ -1,70 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Mime;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using BingMapsRESTToolkit;
 using Microsoft.Ajax.Utilities;
+using OPRWebApp.Models;
+using RestSharp;
+using Point = OPRWebApp.Models.Point;
 
 namespace OPRWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private string _bingMapsKey = null;
-
-        private void Initialize()
+        public ActionResult Index(string sessionId)
         {
-            _bingMapsKey = WebConfigurationManager.AppSettings["BingMapsKey"];
-        }
-
-        public ActionResult Index(string sessionId, string query)
-        {
-            Initialize();
             ViewData["session"] = sessionId;
-            ViewData["BingMapsKey"] = _bingMapsKey;
-
-            if (!string.IsNullOrEmpty(query))
-            {
-                ViewData["LocationInformation"] = GetLocationInformation(query);
-            }
-
             return View();
         }
-
-        public string GetLocationInformation(string query)
+        
+        public string AddLocationToRouteLeg(string location)
         {
-            string result = string.Format("No results found for query : {0}", query);
-            
-            var response = ServiceManager.GetResponseAsync(new GeocodeRequest()
-            {
-                BingMapsKey = _bingMapsKey,
-                Query = query
-            }).GetAwaiter().GetResult();
+            var locationInformation = GetLocationInformation(location);
+            string locationName = locationInformation.Name;
+            Point locationCoordinates = new Point(locationInformation.Point.Coordinates);
 
-            if (response != null && response.ResourceSets != null &&
-                response.ResourceSets.Length > 0 &&
-                response.ResourceSets[0].Resources != null &&
-                response.ResourceSets[0].Resources.Length > 0)
-            {
-                for (var i = 0; i < response.ResourceSets[0].Resources.Length; i++)
-                {
-                    result = (response.ResourceSets[0].Resources[i] as Location).Name;
-                }
-            }
-
-            return result;
+            //TODO: Query the database to keep track of the current route, add the element to it, and return the full route
+            string currentRoute = string.Format("{0} : {1}", locationName, locationCoordinates);
+            return currentRoute;
         }
 
-        public ActionResult About()
+        public string GetLocationName(string location)
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
+            return GetLocationInformation(location).Name;
         }
 
-        public ActionResult Contact()
+        public string GetLocationCoordinates(string location)
         {
-            ViewBag.Message = "Your contact page.";
+            var coordinates = new Point(GetLocationInformation(location).Point.Coordinates);
+            return coordinates.ToString();
+        }
 
-            return View();
+        private Location GetLocationInformation(string location)
+        {
+            Uri geoCodeRequest = BingMapsHelper.GenerateLocationURI(location);
+            return (Location)BingMapsHelper.QueryBingMaps(geoCodeRequest).ResourceSets[0].Resources[0];
         }
     }
 }

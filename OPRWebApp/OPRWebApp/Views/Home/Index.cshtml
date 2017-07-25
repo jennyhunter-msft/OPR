@@ -1,21 +1,25 @@
-﻿@{
+﻿@using OPRWebApp.Models
+@{
     ViewBag.Title = "OPR";
     string session = (string)ViewData["session"];
-    string bingMapsKey = (string)ViewData["BingMapsKey"];
-    string locationInformation = (string)ViewData["LocationInformation"];
 
     string SessionIdDisplay = "Your Session ID isn't currently set.";
+
+    List<Leg> legs = new List<Leg>();
 }
 
 <div class="jumbotron">
     <h1>Optimal Pickup Routes (OPR)</h1>
-    <p class="lead"> OPR allows you to work with others to follow a shortest distance path. <p>
-    <p> Do you need to pick up friends from all across the area? With OPR, you can put their addresses into our system as stops, and it will give you the optimal path to pick them up. In addition, they can track your location using the “Locate Traveler” feature. </p>
-    </p>    <p>
-        @if (!string.IsNullOrEmpty(locationInformation))
-        {
-            @locationInformation
-        }
+    <p class="lead"> OPR allows you to work with others to follow a shortest distance path. </p>
+    <p>
+        Do you need to pick up friends from all across the area? With OPR, you can put their addresses into our system as stops, and it will give you the optimal path to pick them up. In addition, they can track your location using the “Locate Traveler” feature.
+    </p>
+
+    @Html.TextBox("Location")
+    <input type="button" value="Add to current Route" onclick="UpdateLocation($('#Location').val())" />
+
+    <p id="CurrentRoute">
+    <p id="LocationCoordinates" />
     </p>
     <p>
         @if (!string.IsNullOrEmpty(session))
@@ -24,11 +28,15 @@
         }
         @SessionIdDisplay
     </p>
-    <p>
-        @if (string.IsNullOrEmpty(bingMapsKey))
-        {
-            string error = "There is currently no bingMapsKey set.";
-            @error
-        }
-    </p>
 </div>
+
+<script>
+    function UpdateLocation(value) {
+        $.ajax({
+            url: "@Url.Action("AddLocationToRouteLeg", "Home")?location=" + value,
+        }).done(function (data) {
+            //TODO: Once data represents the route, remove mockup information
+            document.getElementById("CurrentRoute").innerHTML += "<br>" + data;
+        });
+    }
+</script>
