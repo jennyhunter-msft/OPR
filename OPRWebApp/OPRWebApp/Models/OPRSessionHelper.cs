@@ -60,7 +60,8 @@ namespace OPRWebApp.Models
             List<string> path = new List<string>();
             using (var db = new OPRDBEntities())
             {
-                path = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).Select(st => st.StopOrder + " - " + st.Addr + " : " + st.Longitude + "," + st.Latitude).ToList();
+                var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
+                path.AddRange(stops.Select(st => $"{st.StopOrder} : {st.Addr} : {st.Longitude:F12},{st.Latitude:F12}"));
             }
             return path;
         }

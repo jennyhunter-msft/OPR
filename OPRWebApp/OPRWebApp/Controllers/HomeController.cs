@@ -40,8 +40,11 @@ namespace OPRWebApp.Controllers
                 //Confirm that sessionId is valid
                 var pathExists = OPRSessionHelper.PathExistsForSession(sessionId, pathId);
                 ViewBag.PathId = pathExists ? pathId : Constants.InvalidPathID;
-                ViewBag.CurrentPath = pathExists ? string.Join("<br/>", OPRSessionHelper.RetrievePath(sessionId, pathId)) : "";
+                ViewBag.CurrentPath = pathExists ? string.Join("&", OPRSessionHelper.RetrievePath(sessionId, pathId)) : "";
             }
+
+            //TODO; find a better way to share the bingmapskey
+            ViewBag.BingMapsKey = BingMapsHelper.BingMapsKey;
 
             return View();
         }

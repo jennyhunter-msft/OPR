@@ -13,22 +13,18 @@
     <input type="button" value="Add to Path" onclick="AddLocationToRoute()" />
     <p id="CurrentPath">
     <p id="LocationCoordinates" />
-
+    <div id="myMap" style="position:relative;width:755px;height:800px"></div>
+    @*<div id='directionsItinerary' style="position:relative;height:800px; float:right"></div>*@
 </div>
 
-<<<<<<< HEAD
-
-<script type='text/javascript'
-        src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'
-        async defer>
-</script>
-
+<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'></script>
 <script type='text/javascript'>
     var map, directionsManager;
 
     function GetMap() {
         map = new Microsoft.Maps.Map('#myMap', {
-            credentials: 'Am9BFJC-ez5iD_eqCzl5rh7d4U-uLbF9x6SFbpST6uhGgYkdgFXsDzAfD84_kfzS'
+            credentials: '@ViewBag.BingMapsKey'
         });
 
         //Load the directions module.
@@ -36,45 +32,15 @@
             //Create an instance of the directions manager.
             directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
 
-            //Create waypoints to route between.
-            var redmondWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Redmond, WA' });
-            directionsManager.addWaypoint(redmondWaypoint);
-
-            var ms41Waypoint = new Microsoft.Maps.Directions.Waypoint({ address: '15571 NE 31st St, Redmond, WA 98052' });
-            directionsManager.addWaypoint(ms41Waypoint);
-
-            var workWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Work', location: new Microsoft.Maps.Location(47.64, -122.1297) });
-            directionsManager.addWaypoint(workWaypoint);
-
             //Specify the element in which the itinerary will be rendered and set the transport option
             directionsManager.setRequestOptions({
                 routeMode: Microsoft.Maps.Directions.RouteMode.walking
             });
 
-            directionsManager.setRenderOptions({ showInputPanel: true, itineraryContainer: '#directionsItinerary' });
-
-            //Calculate directions.
-            directionsManager.calculateDirections();
+            //directionsManager.setRenderOptions({ showInputPanel: true, itineraryContainer: '#directionsItinerary' });
         });
     }
 
-    function AddRandomToRoute() {
-        // Get a random location
-        var randomPoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Random Point', location: Microsoft.Maps.TestDataGenerator.getLocations(1, map.getBounds()) }, 1);
-
-        // Add way point
-        directionsManager.addWaypoint(randomPoint);
-        // Recalculate directions
-        directionsManager.calculateDirections();
-    }
-</script>
-<div id="myMap" style="position:relative;width:755px;height:800px; float: left"></div>
-<div id='directionsItinerary' style="position:relative; float:right"></div>
-=======
-<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
-
->>>>>>> 4a686c2079640c499db53119c1158bc0fac3c419
-<script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
         if (e.keyCode == 13) {
@@ -94,16 +60,38 @@
                 location: $('#Location').val()
             },
             success: function (result) {
-                document.getElementById("CurrentPath").innerHTML = result.join("<br />");
+                //document.getElementById("CurrentPath").innerHTML = result.join("<br />");
+                var i = result.length-1;
+                locationInfo = result[i].split(/[:]+/);
+                var coordinates = locationInfo[2].split(/[,]+/);
+                var point = new Microsoft.Maps.Directions.Waypoint({ address: locationInfo[1], location: new Microsoft.Maps.Location(coordinates[0], coordinates[1]) }, locationInfo[0]);
+                directionsManager.addWaypoint(point);
+                // Recalculate directions
+                if (directionsManager.getAllWaypoints().length >= 2) {
+                    directionsManager.calculateDirections();
+                }
             },
             error: function (result) {
                 alert($.parseJSON(result.responseText).error);
             }
         });
     }
+</script>
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
+<script>
+    $(window).on("load", function () {
+        var currentPath = ("@Html.Raw(ViewBag.CurrentPath)").split(/[&]+/);
+        var arrayLength = currentPath.length;
+        for (var i = 0; i < arrayLength; i++) {
+            locationInfo = currentPath[i].split(/[:]+/);
+            var coordinates = locationInfo[2].split(/[,]+/);
+            var point = new Microsoft.Maps.Directions.Waypoint({ address: locationInfo[1], location: new Microsoft.Maps.Location(coordinates[0], coordinates[1]) }, locationInfo[0]);
 
-    $(document).ready(function() {
-        document.getElementById("CurrentPath").innerHTML = "@Html.Raw(ViewBag.CurrentPath)";
+            directionsManager.addWaypoint(point);
+        }
+        // Recalculate directions
+        if (directionsManager.getAllWaypoints().length >= 2) {
+            directionsManager.calculateDirections();
+        }
     });
 </script>
-<div><input type="button" value="Add random to route" onclick="AddRandomToRoute()" /></div>

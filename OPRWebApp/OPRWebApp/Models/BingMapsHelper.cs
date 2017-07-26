@@ -19,6 +19,8 @@ namespace OPRWebApp.Models
         private const string _bingMapsRouteURL = _bingMapsBaseUrl + "/Routes/{0}?{1}$key={2}";
         private const string _baseTransportMode = "Driving";
 
+        public static string BingMapsKey => _bingMapsKey;
+
         public static string GetLocationName(string location)
         {
             return GetLocationInformation(location).Name;
@@ -113,7 +115,7 @@ namespace OPRWebApp.Models
 
         public override string ToString()
         {
-            return $"{Longitude},{Latitude}";
+            return string.Format("{0:F12},{1:F12}", Longitude, Latitude);
         }
     }
 }
