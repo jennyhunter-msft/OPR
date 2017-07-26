@@ -10,12 +10,13 @@
     </p>
 
     @Html.TextBox("Location")
-    <input type="button" value="Add to current Route" onclick="AddLocationToRoute()" />
-    <p id="CurrentRoute">
+    <input type="button" value="Add to Path" onclick="AddLocationToRoute()" />
+    <p id="CurrentPath">
     <p id="LocationCoordinates" />
 
 </div>
 
+<<<<<<< HEAD
 
 <script type='text/javascript'
         src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'
@@ -69,6 +70,10 @@
 </script>
 <div id="myMap" style="position:relative;width:755px;height:800px; float: left"></div>
 <div id='directionsItinerary' style="position:relative; float:right"></div>
+=======
+<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
+
+>>>>>>> 4a686c2079640c499db53119c1158bc0fac3c419
 <script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
@@ -89,12 +94,16 @@
                 location: $('#Location').val()
             },
             success: function (result) {
-                document.getElementById("CurrentRoute").innerHTML = result.join("<br />");
+                document.getElementById("CurrentPath").innerHTML = result.join("<br />");
             },
             error: function (result) {
                 alert($.parseJSON(result.responseText).error);
             }
         });
     }
+
+    $(document).ready(function() {
+        document.getElementById("CurrentPath").innerHTML = "@Html.Raw(ViewBag.CurrentPath)";
+    });
 </script>
 <div><input type="button" value="Add random to route" onclick="AddRandomToRoute()" /></div>

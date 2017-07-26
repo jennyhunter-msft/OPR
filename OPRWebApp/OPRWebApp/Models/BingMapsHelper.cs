@@ -33,7 +33,8 @@ namespace OPRWebApp.Models
         public static Location GetLocationInformation(string location)
         {
             Uri geoCodeRequest = BingMapsHelper.GenerateLocationURI(location);
-            return (Location)BingMapsHelper.QueryBingMaps(geoCodeRequest).ResourceSets[0].Resources[0];
+            var response = BingMapsHelper.QueryBingMaps(geoCodeRequest);
+            return (Location)response.ResourceSets[0].Resources[0];
         }
 
         public static Uri GenerateLocationURI(string location)
@@ -43,7 +44,7 @@ namespace OPRWebApp.Models
 
         public static Uri GenerateRouteURI(string transportMode = _baseTransportMode, Leg[] legs = null)
         {
-            string legsUriElements = String.Join("&", legs.SelectMany(l => l.GenerateUriElement()));
+            string legsUriElements = string.Join("&", legs.SelectMany(l => l.GenerateUriElement()));
             return new Uri(string.Format(_bingMapsRouteURL, transportMode, legsUriElements, _bingMapsKey));
         }
 
@@ -56,7 +57,7 @@ namespace OPRWebApp.Models
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        var message = String.Format("Request failed. Received HTTP {0}", response.StatusCode);
+                        var message = string.Format("Request failed. Received HTTP {0}", response.StatusCode);
                         throw new ApplicationException(message);
                     }
 

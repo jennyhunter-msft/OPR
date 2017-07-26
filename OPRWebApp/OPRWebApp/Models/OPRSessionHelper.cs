@@ -15,6 +15,35 @@ namespace OPRWebApp.Models
                 return sessionExists;
             }
         }
+
+        public static string AddSession()
+        {
+            var sessionId = Guid.NewGuid();
+            using (var db = new OPRDBEntities())
+            {
+                //add new stop
+                Session newSession = new Session();
+                newSession.SessionID = sessionId;
+                db.Sessions.Add(newSession);
+                db.SaveChanges();
+            }
+            return sessionId.ToString();
+        }
+        public static string AddPath(string sessionId)
+        {
+            var pathId = Guid.NewGuid();
+            using (var db = new OPRDBEntities())
+            {
+                //add new stop
+                Path newPath = new Path();
+                newPath.SessionID = Guid.Parse(sessionId);
+                newPath.PathID = pathId;
+                db.Paths.Add(newPath);
+                db.SaveChanges();
+            }
+            return pathId.ToString();
+        }
+
         public static bool PathExistsForSession(string sessionId, string pathId)
         {
             using (var db = new OPRDBEntities())
@@ -26,11 +55,21 @@ namespace OPRWebApp.Models
             }
         }
 
-        public static List<string> AddStopToPath(string sessionId, string pathId, string location)
+        public static List<string> RetrievePath(string sessionId, string pathId)
+        {
+            List<string> path = new List<string>();
+            using (var db = new OPRDBEntities())
+            {
+                path = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).Select(st => st.StopOrder + " - " + st.Addr + " : " + st.Longitude + "," + st.Latitude).ToList();
+            }
+            return path;
+        }
+        
+        public static string AddStopToPath(string sessionId, string pathId, string location)
         {
             Location stopInformation = BingMapsHelper.GetLocationInformation(location);
             Point stopCoordinates = new Point(stopInformation.Point.Coordinates);
-            List<string> currentPath = new List<string>();
+            var stopId = Guid.NewGuid();
 
             using (var db = new OPRDBEntities())
             {
@@ -40,19 +79,15 @@ namespace OPRWebApp.Models
                 //add new stop
                 Stop newStop = new Stop();
                 newStop.StopOrder = stopOrder;
-                newStop.StopID = Guid.NewGuid();
+                newStop.StopID = stopId;
                 newStop.PathID = Guid.Parse(pathId);
                 newStop.Addr = stopInformation.Address.FormattedAddress;
                 newStop.Longitude = stopCoordinates.Longitude;
                 newStop.Latitude = stopCoordinates.Latitude;
                 db.Stops.Add(newStop);
                 db.SaveChanges();
-
-                //retrieve current path
-                currentPath = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).Select(st => st.StopOrder + " - " + st.Addr + " : " + st.Longitude + "," + st.Latitude).ToList();
             }
-
-            return currentPath;
+            return stopId.ToString();
         }
     }
 
