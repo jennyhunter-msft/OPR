@@ -16,8 +16,6 @@
 
 </div>
 
-<<<<<<< HEAD
-
 <script type='text/javascript'
         src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'
         async defer>
@@ -28,7 +26,7 @@
 
     function GetMap() {
         map = new Microsoft.Maps.Map('#myMap', {
-            credentials: 'Am9BFJC-ez5iD_eqCzl5rh7d4U-uLbF9x6SFbpST6uhGgYkdgFXsDzAfD84_kfzS'
+            credentials: 'INSERT BING MAPS KEY HERE'
         });
 
         //Load the directions module.
@@ -60,8 +58,7 @@
 
     function AddRandomToRoute() {
         // Get a random location
-        var randomPoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Random Point', location: Microsoft.Maps.TestDataGenerator.getLocations(1, map.getBounds()) }, 1);
-
+        var randomPoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Random Point', location: Microsoft.Maps.TestDataGenerator.getLocations(1, map.getBounds()) });
         // Add way point
         directionsManager.addWaypoint(randomPoint);
         // Recalculate directions
@@ -70,10 +67,9 @@
 </script>
 <div id="myMap" style="position:relative;width:755px;height:800px; float: left"></div>
 <div id='directionsItinerary' style="position:relative; float:right"></div>
-=======
+
 <script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
 
->>>>>>> 4a686c2079640c499db53119c1158bc0fac3c419
 <script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
@@ -106,4 +102,4 @@
         document.getElementById("CurrentPath").innerHTML = "@Html.Raw(ViewBag.CurrentPath)";
     });
 </script>
-<div><input type="button" value="Add random to route" onclick="AddRandomToRoute()" /></div>
+<div><input type="button" value="Add random point to route" onclick="AddRandomToRoute()" /></div>
