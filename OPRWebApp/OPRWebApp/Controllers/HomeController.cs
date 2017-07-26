@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Runtime.Serialization.Json;
@@ -39,6 +40,7 @@ namespace OPRWebApp.Controllers
                 //Confirm that sessionId is valid
                 var pathExists = OPRSessionHelper.PathExistsForSession(sessionId, pathId);
                 ViewBag.PathId = pathExists ? pathId : Constants.InvalidPathID;
+                ViewBag.CurrentPath = pathExists ? string.Join("<br/>", OPRSessionHelper.RetrievePath(sessionId, pathId)) : "";
             }
 
             return View();
@@ -56,12 +58,26 @@ namespace OPRWebApp.Controllers
         }
 
         [HttpPost]
+        public ActionResult AddSession()
+        {
+            var session = OPRSessionHelper.AddSession();
+            return Json(session);
+        }
+
+        [HttpPost]
+        public ActionResult AddPath(string sessionId)
+        {
+            var path = OPRSessionHelper.AddPath(sessionId);
+            return Json(path);
+        }
+
+        [HttpPost]
         public ActionResult AddLocationToPath(string sessionId, string pathId, string location)
         {
             if (!IsSessionValid(sessionId))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(new {error = "ERROR : Invalid Session ID"});
+                return Json(new { error = "ERROR : Invalid Session ID" });
             }
             if (!IsPathValid(pathId))
             {
@@ -69,7 +85,9 @@ namespace OPRWebApp.Controllers
                 return Json(new { error = "ERROR : Invalid Path ID" });
             }
 
-            var currentPath = OPRSessionHelper.AddStopToPath(sessionId,pathId,location);
+            OPRSessionHelper.AddStopToPath(sessionId, pathId, location);
+            var currentPath = OPRSessionHelper.RetrievePath(sessionId, pathId);
+
             return Json(currentPath); ;
         }
     }

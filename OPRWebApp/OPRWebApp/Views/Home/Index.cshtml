@@ -10,11 +10,13 @@
     </p>
 
     @Html.TextBox("Location")
-    <input type="button" value="Add to current Route" onclick="AddLocationToRoute()" />
-    <p id="CurrentRoute">
+    <input type="button" value="Add to Path" onclick="AddLocationToRoute()" />
+    <p id="CurrentPath">
     <p id="LocationCoordinates" />
 
 </div>
+
+<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
 
 <script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
@@ -36,11 +38,15 @@
                 location: $('#Location').val()
             },
             success: function (result) {
-                document.getElementById("CurrentRoute").innerHTML = result.join("<br />");
+                document.getElementById("CurrentPath").innerHTML = result.join("<br />");
             },
             error: function (result) {
                 alert($.parseJSON(result.responseText).error);
             }
         });
     }
+
+    $(document).ready(function() {
+        document.getElementById("CurrentPath").innerHTML = "@Html.Raw(ViewBag.CurrentPath)";
+    });
 </script>

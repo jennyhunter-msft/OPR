@@ -34,6 +34,11 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button id="contextAdd" type="button" class="navbar-brand">???</button>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -85,5 +90,55 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            if ("@ViewBag.SessionId" == "@Constants.EmptySessionID" || "@ViewBag.SessionId" == "@Constants.InvalidSessionID") {
+                document.getElementById("contextAdd").innerHTML = "New Session";
+                document.getElementById("contextAdd").onclick = function () { AddSession(); };
+            }
+            else if ("@ViewBag.PathId" == "@Constants.EmptyPathID" || "@ViewBag.PathId" == "@Constants.InvalidPathID") {
+                document.getElementById("contextAdd").innerHTML = "New Path";
+                document.getElementById("contextAdd").onclick = function() { AddPath(); };
+            }
+            else {
+                document.getElementById("contextAdd").hidden = true;
+            }
+        });
+
+        function AddSession() {
+            $.ajax({
+                url: '@Url.Action("AddSession", "Home")',
+                type: 'POST',
+                async: false,
+                dataType: 'json',
+                success: function (result) {
+                    var url = '@Url.Action("Index", "Home", new { sessionId = "__id__" })';
+                    window.location.href = url.replace('__id__', result);
+                },
+                error: function (result) {
+                    alert($.parseJSON(result.responseText).error);
+                }
+            });
+        }
+
+        function AddPath() {
+            $.ajax({
+                url: '@Url.Action("AddPath", "Home")',
+                type: 'POST',
+                async: false,
+                dataType: 'json',
+                data: {
+                    sessionId: "@ViewBag.SessionId"
+                },
+                success: function (result) {
+                    var url = '@Url.Action("Index", "Home", new { sessionId = ViewBag.SessionId, pathId = "__pathId__" })';
+                    window.location.href = url.replace('__pathId__', result);
+                },
+                error: function (result) {
+                    alert($.parseJSON(result.responseText).error);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

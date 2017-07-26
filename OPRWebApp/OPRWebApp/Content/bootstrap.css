@@ -4179,6 +4179,13 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     float: left;
   }
 }
+button.navbar-brand {
+    background:none;
+    background-color: Transparent;
+    border-color:none;
+    border:none;
+    font-size: 14px;
+}
 .navbar-collapse {
   padding-right: 15px;
   padding-left: 15px;
@@ -4277,6 +4284,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   padding: 15px 15px;
   font-size: 18px;
   line-height: 20px;
+  background:none; 
+  border:none;
 }
 .navbar-brand:hover,
 .navbar-brand:focus {
