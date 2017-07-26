@@ -11,6 +11,7 @@ namespace OPRWebApp.Models
     public class OPRSessionHelper
     {
         private static string _cognitiveKey = WebConfigurationManager.AppSettings["CognitiveKey"];
+        private static string _cognitiveURI = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key={0}&mode={1}&origins={2}";
 
         public static bool SessionExists(string sessionId)
         {
@@ -66,7 +67,7 @@ namespace OPRWebApp.Models
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
-                path.AddRange(stops.Select(st => $"{st.StopOrder} : {st.Addr} : {st.Longitude:F12},{st.Latitude:F12}"));
+                path.AddRange(stops.Select(st => $"{st.StopOrder} : {st.Addr} : {st.Latitude:F12},{st.Longitude:F12}"));
             }
             return path;
         }
@@ -88,8 +89,8 @@ namespace OPRWebApp.Models
                 newStop.StopID = stopId;
                 newStop.PathID = Guid.Parse(pathId);
                 newStop.Addr = stopInformation.Address.FormattedAddress;
-                newStop.Longitude = stopCoordinates.Longitude;
                 newStop.Latitude = stopCoordinates.Latitude;
+                newStop.Longitude = stopCoordinates.Longitude;
                 db.Stops.Add(newStop);
                 db.SaveChanges();
             }
@@ -100,15 +101,14 @@ namespace OPRWebApp.Models
         {
             // List of locations in the format {lat,long;lat,long;lat,long...}
             string locList;
-            List<string> path = new List<string>();
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
                 locList = string.Join(";", stops.Select(st => $"{st.Latitude:F12},{st.Longitude:F12}"));
             }
 
+            string uri = string.Format(_cognitiveURI, _cognitiveKey, BingMapsHelper.TransportationMode, locList);
 
-            string uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + _cognitiveKey + "&mode=walking&origins=" + locList;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Add("Ocp-Apim-Subscription-Key="+_cognitiveKey);
 
@@ -122,6 +122,7 @@ namespace OPRWebApp.Models
             response.Close();
             readStream.Close();
 
+            List<string> path = new List<string>();
             return path;
         }
     }

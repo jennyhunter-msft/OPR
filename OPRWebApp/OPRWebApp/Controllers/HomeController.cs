@@ -97,9 +97,7 @@ namespace OPRWebApp.Controllers
         [HttpPost]
         public ActionResult OptimizePath(string sessionId, string pathId)
         {
-            //TODO: Optimize stuff
-            //OPRSessionHelper.OptimizePath(sessionId, pathId);
-
+            OPRSessionHelper.OptimizePath(sessionId, pathId);
             var currentPath = OPRSessionHelper.RetrievePath(sessionId, pathId);
             return Json(currentPath); ;
         }

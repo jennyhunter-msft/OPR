@@ -15,11 +15,12 @@ namespace OPRWebApp.Models
 
         private const string _bingMapsBaseUrl = "http://dev.virtualearth.net/REST/v1/";
 
-        private const string _bingMapsLocationURL = _bingMapsBaseUrl + "/Locations?q={0}&key={1}";
-        private const string _bingMapsRouteURL = _bingMapsBaseUrl + "/Routes/{0}?{1}$key={2}";
-        private const string _baseTransportMode = "Driving";
+        private const string _bingMapsLocationUrl = _bingMapsBaseUrl + "/Locations?q={0}&key={1}";
+        private const string _bingMapsRouteUrl = _bingMapsBaseUrl + "/Routes/{0}?{1}$key={2}";
+        private const string _baseTransportMode = "Walking";
 
         public static string BingMapsKey => _bingMapsKey;
+        public static string TransportationMode => _baseTransportMode;
 
         public static string GetLocationName(string location)
         {
@@ -41,13 +42,13 @@ namespace OPRWebApp.Models
 
         public static Uri GenerateLocationURI(string location)
         {
-            return new Uri(string.Format(_bingMapsLocationURL, location, _bingMapsKey));
+            return new Uri(string.Format(_bingMapsLocationUrl, location, _bingMapsKey));
         }
 
         public static Uri GenerateRouteURI(string transportMode = _baseTransportMode, Leg[] legs = null)
         {
             string legsUriElements = string.Join("&", legs.SelectMany(l => l.GenerateUriElement()));
-            return new Uri(string.Format(_bingMapsRouteURL, transportMode, legsUriElements, _bingMapsKey));
+            return new Uri(string.Format(_bingMapsRouteUrl, transportMode, legsUriElements, _bingMapsKey));
         }
 
         public static Response QueryBingMaps(Uri geoCodeRequest)
@@ -98,24 +99,24 @@ namespace OPRWebApp.Models
 
     public class Point
     {
-        public double Longitude;
         public double Latitude;
+        public double Longitude;
 
         public Point(double[] d)
         {
-            Longitude = d[0];
-            Latitude = d[1];
+            Latitude = d[0];
+            Longitude = d[1];
         }
 
-        public Point(double longitude, double latitude)
+        public Point(double latitude, double longitude)
         {
-            Longitude = longitude;
             Latitude = latitude;
+            Longitude = longitude;
         }
 
         public override string ToString()
         {
-            return string.Format("{0:F12},{1:F12}", Longitude, Latitude);
+            return string.Format("{0:F12},{1:F12}", Latitude, Longitude);
         }
     }
 }
