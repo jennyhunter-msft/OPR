@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BingMapsRESTToolkit;
+using System.Net;
 
 namespace OPRWebApp.Models
 {
@@ -89,6 +90,24 @@ namespace OPRWebApp.Models
                 db.SaveChanges();
             }
             return stopId.ToString();
+        }
+
+        public static List<string> OptimizePath(string sessionId, string pathId)
+        {
+            // List of locations in the format {lat,long;lat,long,lat,long...}
+            var locList;
+            List<string> path = new List<string>();
+            using (var db = new OPRDBEntities())
+            {
+                var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
+                
+            }
+            var cognitiveKey = "INSERT ABU DHABI KEY HERE";
+            var uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Headers.Add("Ocp-Apim-Subscription-Key="+cognitiveKey);
+
+            return path;
         }
     }
 
