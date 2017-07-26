@@ -4,11 +4,14 @@ using System.Linq;
 using BingMapsRESTToolkit;
 using System.Net;
 using System.IO;
+using System.Web.Configuration;
 
 namespace OPRWebApp.Models
 {
     public class OPRSessionHelper
     {
+        private static string _cognitiveKey = WebConfigurationManager.AppSettings["CognitiveKey"];
+
         public static bool SessionExists(string sessionId)
         {
             using (var db = new OPRDBEntities())
@@ -101,12 +104,13 @@ namespace OPRWebApp.Models
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
-                
+                locList = string.Join(";", stops.Select(st => $"{st.Latitude:F12},{st.Longitude:F12}"));
             }
-            string cognitiveKey = "INSERT ABU DHABI KEY HERE";
-            string uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
+
+
+            string uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + _cognitiveKey + "&mode=walking&origins=" + locList;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Headers.Add("Ocp-Apim-Subscription-Key="+cognitiveKey);
+            request.Headers.Add("Ocp-Apim-Subscription-Key="+_cognitiveKey);
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             // Get the stream associated with the response.
