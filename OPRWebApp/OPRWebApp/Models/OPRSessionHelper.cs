@@ -103,7 +103,7 @@ namespace OPRWebApp.Models
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
                 
             }
-            string cognitiveKey = "950b6f9a560c4b118918f6de62964e5b";
+            string cognitiveKey = "INSERT ABU DHABI KEY HERE";
             string uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Add("Ocp-Apim-Subscription-Key="+cognitiveKey);
