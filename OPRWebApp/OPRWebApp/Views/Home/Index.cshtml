@@ -20,7 +20,7 @@
 <script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
 <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'></script>
 <script type='text/javascript'>
-    var map, directionsManager;
+    var map, directionsManager, userPin, watchId;
 
     function GetMap() {
         map = new Microsoft.Maps.Map('#myMap', {
@@ -41,6 +41,60 @@
         });
     }
 
+    function AddRandomToRoute() {
+        // Get a random location
+        var randomPoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Random Point', location: Microsoft.Maps.TestDataGenerator.getLocations(1, map.getBounds()) });
+        // Add way point
+        directionsManager.addWaypoint(randomPoint);
+        // Recalculate directions
+        directionsManager.calculateDirections();
+    }
+
+    function StartTracking() {
+        //Request the user's location
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var posLoc = new Microsoft.Maps.Location(
+                position.coords.latitude,
+                position.coords.longitude);
+
+            //Add a pushpin to show the user's location.
+            userPin = new Microsoft.Maps.Pushpin(posLoc, { visible: false });
+            map.entities.push(userPin);
+
+            //Watch the users location.
+            watchId = navigator.geolocation.watchPosition(UsersLocationUpdated);
+        });
+    }
+
+    function UsersLocationUpdated(position) {
+        var loc = new Microsoft.Maps.Location(
+            position.coords.latitude,
+            position.coords.longitude);
+
+        //Update the user pushpin.
+        userPin.setLocation(loc);
+        userPin.setOptions({ visible: true });
+
+        //Center the map on the user's location.
+        map.setView({ center: loc });
+    }
+
+    function StopTracking() {
+        // Cancel the geolocation updates.
+        navigator.geolocation.clearWatch(watchId);
+
+        //Remove the user pushpin.
+        map.entities.clear();
+    }
+
+
+</script>
+<div id="myMap" style="position:relative;width:755px;height:800px; float: left"></div>
+<div id='directionsItinerary' style="position:relative; float:right"></div>
+
+<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
+
+<script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
         if (e.keyCode == 13) {
@@ -95,3 +149,6 @@
         }
     });
 </script>
+<div><input type="button" value="Add random point to route" onclick="AddRandomToRoute()" /></div>
+<input type="button" value="Start Tracking Me" onclick="StartTracking()" />
+<input type="button" value="Stop Tracking Me" onclick="StopTracking()" />
