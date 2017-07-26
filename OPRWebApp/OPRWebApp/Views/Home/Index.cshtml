@@ -13,6 +13,8 @@
     <input type="button" value="Add to Path" onclick="AddLocationToRoute()" />
     <p id="CurrentPath">
     <p id="LocationCoordinates" />
+    <input type="button" value="Start Tracking Me" onclick="StartTracking()" />
+    <input type="button" value="Stop Tracking Me" onclick="StopTracking()" />
     <div id="myMap" style="position:relative;width:755px;height:800px"></div>
     @*<div id='directionsItinerary' style="position:relative;height:800px; float:right"></div>*@
 </div>
@@ -40,16 +42,7 @@
             //directionsManager.setRenderOptions({ showInputPanel: true, itineraryContainer: '#directionsItinerary' });
         });
     }
-
-    function AddRandomToRoute() {
-        // Get a random location
-        var randomPoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Random Point', location: Microsoft.Maps.TestDataGenerator.getLocations(1, map.getBounds()) });
-        // Add way point
-        directionsManager.addWaypoint(randomPoint);
-        // Recalculate directions
-        directionsManager.calculateDirections();
-    }
-
+    
     function StartTracking() {
         //Request the user's location
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -87,14 +80,6 @@
         map.entities.clear();
     }
 
-
-</script>
-<div id="myMap" style="position:relative;width:755px;height:800px; float: left"></div>
-<div id='directionsItinerary' style="position:relative; float:right"></div>
-
-<script language="JavaScript" type="text/javascript" src="../../../Scripts/jquery-3.1.1.js"></script>
-
-<script>
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
         if (e.keyCode == 13) {
@@ -149,6 +134,3 @@
         }
     });
 </script>
-<div><input type="button" value="Add random point to route" onclick="AddRandomToRoute()" /></div>
-<input type="button" value="Start Tracking Me" onclick="StartTracking()" />
-<input type="button" value="Stop Tracking Me" onclick="StopTracking()" />
