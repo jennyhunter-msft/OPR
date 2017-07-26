@@ -126,19 +126,21 @@ namespace OPRWebApp.Models
             // Create a path object to store the new path
             var apiPathResult = new List<CognitiveApiResult>();
             var apiDestinationIndicies = new List<int?>();
-
+            int? currentOrigin = 0;
 
             // Optimize shit via nearest neighbor
-            for (int i=0; i<stopLength-1; i++)
+            while (apiPathResult.Count()<stopLength-1)
             {
+                
                 // Create a sublist of results only with the current origin index
-                List<CognitiveApiResult> currentResult = reply.results.Where((item, index) => reply.results[index].originIndex == i).ToList();
+                List<CognitiveApiResult> currentResult = reply.results.Where((item, index) => reply.results[index].originIndex == currentOrigin).ToList();
                
-                var nearestNeighbor = currentResult[0];
+                CognitiveApiResult nearestNeighbor = new CognitiveApiResult();
+                nearestNeighbor.travelDistance = Double.MaxValue;
 
 
                 // Loop through the destinations for the minimum distance
-                for (int j=1; j<stopLength; j++)
+                for (int j=1; j<currentResult.Count(); j++)
                 {
                     var currentNeighbor = currentResult[j];
                     if(currentNeighbor.travelDistance < nearestNeighbor.travelDistance && !apiDestinationIndicies.Contains(currentNeighbor.destinationIndex))
@@ -149,7 +151,8 @@ namespace OPRWebApp.Models
 
                 // Add the next path item to the list
                 apiPathResult.Add(nearestNeighbor);
-                apiDestinationIndicies.Add(nearestNeighbor.destinationIndex);
+                apiDestinationIndicies.Add(currentOrigin);
+                currentOrigin = nearestNeighbor.destinationIndex;
             }
 
             // Close the response
