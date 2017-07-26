@@ -99,11 +99,14 @@ namespace OPRWebApp.Models
 
         public static List<string> OptimizePath(string sessionId, string pathId)
         {
+            // Number of stop
+            int stopLength = 0;
             // List of locations in the format {lat,long;lat,long;lat,long...}
             string locList;
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
+                stopLength = stops.Count();
                 locList = string.Join(";", stops.Select(st => $"{st.Latitude:F12},{st.Longitude:F12}"));
             }
 
@@ -118,13 +121,42 @@ namespace OPRWebApp.Models
             // Deserialize the response JSON
             string responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
             System.Web.Script.Serialization.JavaScriptSerializer deSerializedResponse = new System.Web.Script.Serialization.JavaScriptSerializer();
-            ApiReply reply = (ApiReply)deSerializedResponse.Deserialize(responseString, typeof(ApiReply));
+            CognitiveApiReply reply = (CognitiveApiReply)deSerializedResponse.Deserialize(responseString, typeof(CognitiveApiReply));
 
-            // Print reply list
-            List<CognitiveApiResult> resultFromReply = reply.results;
+            // Create a path object to store the new path
+            var apiPathResult = new List<CognitiveApiResult>();
+            var apiDestinationIndicies = new List<int?>();
+
+
+            // Optimize shit via nearest neighbor
+            for (int i=0; i<stopLength-1; i++)
+            {
+                // Create a sublist of results only with the current origin index
+                List<CognitiveApiResult> currentResult = reply.results.Where((item, index) => reply.results[index].originIndex == i).ToList();
+               
+                var nearestNeighbor = currentResult[0];
+
+
+                // Loop through the destinations for the minimum distance
+                for (int j=1; j<stopLength; j++)
+                {
+                    var currentNeighbor = currentResult[j];
+                    if(currentNeighbor.travelDistance < nearestNeighbor.travelDistance && !apiDestinationIndicies.Contains(currentNeighbor.destinationIndex))
+                    {
+                        nearestNeighbor = currentNeighbor;
+                    }
+                }
+
+                // Add the next path item to the list
+                apiPathResult.Add(nearestNeighbor);
+                apiDestinationIndicies.Add(nearestNeighbor.destinationIndex);
+            }
 
             // Close the response
             response.Close();
+
+            // INSERT some conversation here to convert from the API results to the necessary format for the Bing Maps API call
+
 
             List<string> path = new List<string>();
             return path;
@@ -132,7 +164,7 @@ namespace OPRWebApp.Models
     }
 
 
-    public class ApiReply
+    public class CognitiveApiReply
     {
         public bool? isAccepted { get; set; }
         public bool? isCompleted { get; set; }
