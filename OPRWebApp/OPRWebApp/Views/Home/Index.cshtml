@@ -11,10 +11,9 @@
 
     @Html.TextBox("Location")
     <input type="button" value="Add to Path" onclick="AddLocationToRoute()" />
+    <input type="button" value="Optimize!" onclick="OptimizePath()" />
     <p id="CurrentPath">
     <p id="LocationCoordinates" />
-    <input type="button" value="Start Tracking Me" onclick="StartTracking()" />
-    <input type="button" value="Stop Tracking Me" onclick="StopTracking()" />
     <div id="myMap" style="position:relative;width:755px;height:800px"></div>
     @*<div id='directionsItinerary' style="position:relative;height:800px; float:right"></div>*@
 </div>
@@ -42,43 +41,6 @@
             //directionsManager.setRenderOptions({ showInputPanel: true, itineraryContainer: '#directionsItinerary' });
         });
     }
-    
-    function StartTracking() {
-        //Request the user's location
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var posLoc = new Microsoft.Maps.Location(
-                position.coords.latitude,
-                position.coords.longitude);
-
-            //Add a pushpin to show the user's location.
-            userPin = new Microsoft.Maps.Pushpin(posLoc, { visible: false });
-            map.entities.push(userPin);
-
-            //Watch the users location.
-            watchId = navigator.geolocation.watchPosition(UsersLocationUpdated);
-        });
-    }
-
-    function UsersLocationUpdated(position) {
-        var loc = new Microsoft.Maps.Location(
-            position.coords.latitude,
-            position.coords.longitude);
-
-        //Update the user pushpin.
-        userPin.setLocation(loc);
-        userPin.setOptions({ visible: true });
-
-        //Center the map on the user's location.
-        map.setView({ center: loc });
-    }
-
-    function StopTracking() {
-        // Cancel the geolocation updates.
-        navigator.geolocation.clearWatch(watchId);
-
-        //Remove the user pushpin.
-        map.entities.clear();
-    }
 
     document.getElementById("Location").addEventListener("keydown", function (e) {
         //When Enter is pressed
@@ -100,11 +62,14 @@
             },
             success: function (result) {
                 //document.getElementById("CurrentPath").innerHTML = result.join("<br />");
+
+                //Only add the last point to the currently rendered map
                 var i = result.length-1;
                 locationInfo = result[i].split(/[:]+/);
                 var coordinates = locationInfo[2].split(/[,]+/);
                 var point = new Microsoft.Maps.Directions.Waypoint({ address: locationInfo[1], location: new Microsoft.Maps.Location(coordinates[0], coordinates[1]) }, locationInfo[0]);
                 directionsManager.addWaypoint(point);
+
                 // Recalculate directions
                 if (directionsManager.getAllWaypoints().length >= 2) {
                     directionsManager.calculateDirections();
@@ -115,11 +80,31 @@
             }
         });
     }
-</script>
-<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
-<script>
-    $(window).on("load", function () {
-        var currentPath = ("@Html.Raw(ViewBag.CurrentPath)").split(/[&]+/);
+
+    function OptimizePath() {
+        document.getElementById("CurrentPath").innerHTML = "Psyched! I can't do that yet."
+        $.ajax({
+            url: '@Url.Action("OptimizePath", "Home")',
+            type: 'POST',
+            async: false,
+            dataType: 'json',
+            data: {
+                sessionId: "@ViewBag.SessionId",
+                pathId: "@ViewBag.PathId"
+            },
+            success: function (result) {
+                RenderMap(result);
+            },
+            error: function (result) {
+                alert($.parseJSON(result.responseText).error);
+            }
+        });
+    }
+    
+    function RenderMap(currentPath) {
+        directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+        directionsManager.setRequestOptions({routeMode: Microsoft.Maps.Directions.RouteMode.walking});
+
         var arrayLength = currentPath.length;
         for (var i = 0; i < arrayLength; i++) {
             locationInfo = currentPath[i].split(/[:]+/);
@@ -132,5 +117,11 @@
         if (directionsManager.getAllWaypoints().length >= 2) {
             directionsManager.calculateDirections();
         }
+    }
+</script>
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
+<script>
+    $(window).on("load", function () {
+        RenderMap(("@Html.Raw(ViewBag.CurrentPath)").split(/[&]+/));
     });
 </script>
