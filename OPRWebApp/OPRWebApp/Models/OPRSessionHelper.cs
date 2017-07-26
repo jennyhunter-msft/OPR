@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BingMapsRESTToolkit;
 using System.Net;
+using System.IO;
 
 namespace OPRWebApp.Models
 {
@@ -94,18 +95,28 @@ namespace OPRWebApp.Models
 
         public static List<string> OptimizePath(string sessionId, string pathId)
         {
-            // List of locations in the format {lat,long;lat,long,lat,long...}
-            var locList;
+            // List of locations in the format {lat,long;lat,long;lat,long...}
+            string locList;
             List<string> path = new List<string>();
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
                 
             }
-            var cognitiveKey = "INSERT ABU DHABI KEY HERE";
-            var uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
+            string cognitiveKey = "950b6f9a560c4b118918f6de62964e5b";
+            string uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Add("Ocp-Apim-Subscription-Key="+cognitiveKey);
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            // Get the stream associated with the response.
+            Stream receiveStream = response.GetResponseStream();
+
+            // Pipes the stream to a higher level stream reader with the required encoding format. 
+            StreamReader readStream = new StreamReader(receiveStream, System.Text.Encoding.UTF8);
+            Console.WriteLine(readStream.ReadToEnd());
+            response.Close();
+            readStream.Close();
 
             return path;
         }
