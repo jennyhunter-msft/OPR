@@ -112,21 +112,50 @@ namespace OPRWebApp.Models
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Add("Ocp-Apim-Subscription-Key="+_cognitiveKey);
 
+            // Get HTTP response from Abu Dhabi
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            // Get the stream associated with the response.
-            Stream receiveStream = response.GetResponseStream();
 
-            // Pipes the stream to a higher level stream reader with the required encoding format. 
-            StreamReader readStream = new StreamReader(receiveStream, System.Text.Encoding.UTF8);
-            Console.WriteLine(readStream.ReadToEnd());
+            // Deserialize the response JSON
+            string responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            System.Web.Script.Serialization.JavaScriptSerializer deSerializedResponse = new System.Web.Script.Serialization.JavaScriptSerializer();
+            ApiReply reply = (ApiReply)deSerializedResponse.Deserialize(responseString, typeof(ApiReply));
+
+            // Print reply list
+            List<ApiResults> resultFromReply = reply.results;
+
+            // Close the response
             response.Close();
-            readStream.Close();
 
             return path;
         }
     }
 
-    public class Constants
+
+    public class ApiReply
+    {
+        public bool isAccepted { get; set; }
+        public bool isCompleted { get; set; }
+        public double callBackSeconds { get; set; }
+        public string callBackUrl { get; set; }
+        public string errorMessage { get; set; }
+        public int requestId { get; set; }
+        public List<ApiResults> results { get; set; }
+    }
+
+    public class ApiResults
+    {
+        public double originLatitude { get; set; }
+        public double originLongitude { get; set; }
+        public int originIndex { get; set; }
+        public double destinationLatitude { get; set; }
+        public double destinationLongitude { get; set; }
+        public int destinationIndex { get; set; }
+        public double travelDistance { get; set; }
+        public double travelDuration { get; set; }
+        public string departureTime { get; set; }
+    }
+
+        public class Constants
     {
         //Sessions
         public const string EmptySessionID = "EMPTY_SESSION_ID";
