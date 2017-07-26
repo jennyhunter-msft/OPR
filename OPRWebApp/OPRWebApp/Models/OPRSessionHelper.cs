@@ -121,7 +121,7 @@ namespace OPRWebApp.Models
             ApiReply reply = (ApiReply)deSerializedResponse.Deserialize(responseString, typeof(ApiReply));
 
             // Print reply list
-            List<ApiResults> resultFromReply = reply.results;
+            List<CognitiveApiResult> resultFromReply = reply.results;
 
             // Close the response
             response.Close();
@@ -140,10 +140,10 @@ namespace OPRWebApp.Models
         public string callBackUrl { get; set; }
         public string errorMessage { get; set; }
         public int? requestId { get; set; }
-        public List<ApiResults> results { get; set; }
+        public List<CognitiveApiResult> results { get; set; }
     }
 
-    public class ApiResults
+    public class CognitiveApiResult
     {
         public double? originLatitude { get; set; }
         public double? originLongitude { get; set; }
