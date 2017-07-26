@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using BingMapsRESTToolkit;
 using System.Net;
+using System.Web.Configuration;
 
 namespace OPRWebApp.Models
 {
     public class OPRSessionHelper
     {
+        private static string _cognitiveKey = WebConfigurationManager.AppSettings["CognitiveKey"];
+
         public static bool SessionExists(string sessionId)
         {
             using (var db = new OPRDBEntities())
@@ -16,7 +19,7 @@ namespace OPRWebApp.Models
                 return sessionExists;
             }
         }
-
+        
         public static string AddSession()
         {
             var sessionId = Guid.NewGuid();
@@ -95,14 +98,14 @@ namespace OPRWebApp.Models
         public static List<string> OptimizePath(string sessionId, string pathId)
         {
             // List of locations in the format {lat,long;lat,long,lat,long...}
-            var locList;
+            string locList;
             List<string> path = new List<string>();
             using (var db = new OPRDBEntities())
             {
                 var stops = db.Stops.Where(st => string.Equals(st.PathID.ToString(), pathId)).OrderBy(st => st.StopOrder).ToList();
-                
+                locList = string.Join(";", stops.Select(st => $"{st.Latitude:F12},{st.Longitude:F12}"));
             }
-            var cognitiveKey = "INSERT ABU DHABI KEY HERE";
+            var cognitiveKey = _cognitiveKey;
             var uri = "https://api.labs.cognitive.microsoft.com/Routes/Matrix?optimize=distance&subscription-key=" + cognitiveKey + "&mode=walking&origins=" + locList;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Add("Ocp-Apim-Subscription-Key="+cognitiveKey);

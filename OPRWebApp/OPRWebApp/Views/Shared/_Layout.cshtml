@@ -101,7 +101,8 @@
                 document.getElementById("contextAdd").onclick = function() { AddPath(); };
             }
             else {
-                document.getElementById("contextAdd").hidden = true;
+                document.getElementById("contextAdd").innerHTML = "Start Tracking";
+                document.getElementById("contextAdd").onclick = function () { StartTracking(); };
             }
         });
 
@@ -138,6 +139,49 @@
                     alert($.parseJSON(result.responseText).error);
                 }
             });
+        }
+
+        function StartTracking() {
+            document.getElementById("contextAdd").innerHTML = "Stop Tracking";
+            document.getElementById("contextAdd").onclick = function () { StopTracking() };
+
+            //Request the user's location
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var posLoc = new Microsoft.Maps.Location(
+                    position.coords.latitude,
+                    position.coords.longitude);
+
+                //Add a pushpin to show the user's location.
+                userPin = new Microsoft.Maps.Pushpin(posLoc, { visible: false });
+                map.entities.push(userPin);
+
+                //Watch the users location.
+                watchId = navigator.geolocation.watchPosition(UsersLocationUpdated);
+            });
+        }
+
+        function UsersLocationUpdated(position) {
+            var loc = new Microsoft.Maps.Location(
+                position.coords.latitude,
+                position.coords.longitude);
+
+            //Update the user pushpin.
+            userPin.setLocation(loc);
+            userPin.setOptions({ visible: true });
+
+            //Center the map on the user's location.
+            map.setView({ center: loc });
+        }
+
+        function StopTracking() {
+            document.getElementById("contextAdd").innerHTML = "Start Tracking";
+            document.getElementById("contextAdd").onclick = function () { StartTracking() };
+
+            // Cancel the geolocation updates.
+            navigator.geolocation.clearWatch(watchId);
+
+            //Remove the user pushpin.
+            map.entities.clear();
         }
     </script>
 </body>
