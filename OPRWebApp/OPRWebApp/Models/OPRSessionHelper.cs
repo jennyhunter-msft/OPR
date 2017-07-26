@@ -110,7 +110,7 @@ namespace OPRWebApp.Models
             string uri = string.Format(_cognitiveURI, _cognitiveKey, BingMapsHelper.TransportationMode, locList);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Headers.Add("Ocp-Apim-Subscription-Key="+_cognitiveKey);
+            request.Headers.Add("Ocp-Apim-Subscription-Key:"+_cognitiveKey);
 
             // Get HTTP response from Abu Dhabi
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -134,25 +134,25 @@ namespace OPRWebApp.Models
 
     public class ApiReply
     {
-        public bool isAccepted { get; set; }
-        public bool isCompleted { get; set; }
-        public double callBackSeconds { get; set; }
+        public bool? isAccepted { get; set; }
+        public bool? isCompleted { get; set; }
+        public double? callBackSeconds { get; set; }
         public string callBackUrl { get; set; }
         public string errorMessage { get; set; }
-        public int requestId { get; set; }
+        public int? requestId { get; set; }
         public List<ApiResults> results { get; set; }
     }
 
     public class ApiResults
     {
-        public double originLatitude { get; set; }
-        public double originLongitude { get; set; }
-        public int originIndex { get; set; }
-        public double destinationLatitude { get; set; }
-        public double destinationLongitude { get; set; }
-        public int destinationIndex { get; set; }
-        public double travelDistance { get; set; }
-        public double travelDuration { get; set; }
+        public double? originLatitude { get; set; }
+        public double? originLongitude { get; set; }
+        public int? originIndex { get; set; }
+        public double? destinationLatitude { get; set; }
+        public double? destinationLongitude { get; set; }
+        public int? destinationIndex { get; set; }
+        public double? travelDistance { get; set; }
+        public double? travelDuration { get; set; }
         public string departureTime { get; set; }
     }
 
